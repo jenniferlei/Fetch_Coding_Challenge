@@ -9,6 +9,8 @@ uri = os.getenv("DATABASE_URL")
 if uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
 
+# other_uri = "postgresql:///points"
+
 class Transaction(db.Model):
     """A transaction."""
 
