@@ -44,33 +44,51 @@ To run Fetch Rewards Coding Challenge on your local machine, follow the instruct
 Clone repository:
 
 ```
-git clone https://github.com/jenniferlei/Fetch_Coding_Challenge.git
+$ git clone https://github.com/jenniferlei/Fetch_Coding_Challenge.git
 ```
 
 Create and activate a virtual environment inside your project directory:
 
 ```
-virtualenv env (Mac OS)
-virtualenv env --always-copy (Windows OS)
-source env/bin/activate
+$ pip3 install virtualenv
+$ virtualenv env (Mac OS)
+$ virtualenv env --always-copy (Windows OS)
+$ source env/bin/activate
 ```
 
 Install the dependencies:
-`pip3 install -r requirements.txt`
+
+```
+(env) pip3 install -r requirements.txt
+```
+
 (Optionally) Seed the database:
-`python3 seed.py`
+
+```
+(env) python3 seed.py
+```
+
 Note: if you do not run `seed.py`, make sure you create a database named
 points:
 `createdb points`.
+
 Create a secrets.sh file to assign a value to APP_SECRET_KEY and run it:
-`source secrets.sh`
+
+```
+(env) source secrets.sh
+```
+
 Run the app:
-`python3 server.py`
-You can now navigate to 'localhost:5000/' to access Melon Tasting Scheduler.
+
+```
+(env) python3 server.py
+```
+
+You can now navigate to 'localhost:5000/' to start adding and spending points!
 
 ## About the Developer
 
-Jennifer Lei is a software engineer in the Greater Los Angeles Area, and previously worked in multiple fields, such as B2B tech sales, finance and e-commerce. She decided to follow her dreams, pivoted to software engineering, and never looked back!
+Jennifer Lei is a software engineer in the Greater Los Angeles Area, and previously worked in multiple fields, such as B2B tech sales, finance and e-commerce. She decided to follow her dreams, pivoted to software engineering, and has enjoyed every minute of it since!
 
 Let's connect!
 
