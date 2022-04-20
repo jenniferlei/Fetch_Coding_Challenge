@@ -83,7 +83,7 @@ Run the app:
 (env) python3 server.py
 ```
 
-You can now navigate to 'localhost:5000/' to start adding and spending points!
+You can now navigate to `localhost:5000/` to start adding and spending points!
 
 ## About the Developer
 
