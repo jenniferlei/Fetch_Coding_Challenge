@@ -1,11 +1,13 @@
 """Model for fetch rewards app."""
 
 import os
-from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+uri = os.getenv("DATABASE_URL")
+if uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
 
 class Transaction(db.Model):
     """A transaction."""
@@ -56,7 +58,7 @@ class Transaction(db.Model):
         return transactions
 
 
-def connect_to_db(flask_app, db_uri="postgresql:///points", echo=True):
+def connect_to_db(flask_app, db_uri=uri, echo=True):
     """Connect to database."""
 
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
@@ -89,9 +91,5 @@ def example_data():
 if __name__ == "__main__":
 
     from server import app
-
-    # Call connect_to_db(app, echo=False) if your program output gets
-    # too annoying; this will tell SQLAlchemy not to print out every
-    # query it executes.
 
     connect_to_db(app)
