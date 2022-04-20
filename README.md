@@ -89,8 +89,6 @@ You can now navigate to `localhost:5000/` to start adding and spending points!
 
 Jennifer Lei is a software engineer in the Greater Los Angeles Area, and previously worked in multiple fields, such as B2B tech sales, finance and e-commerce. She decided to follow her dreams, pivoted to software engineering, and has enjoyed every minute of it since!
 
-Let's connect!
-
 <p><a href="https://www.linkedin.com/in/jenniferlei/">
   <img
     alt="LinkedIn"
