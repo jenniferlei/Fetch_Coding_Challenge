@@ -9,7 +9,6 @@ Fetch Rewards Coding Challenge is deployed on Heroku: <a href="https://fetch-cod
 - [Tech Stack](#tech-stack)
 - [Justification](#justification)
 - [Reflection](#reflection)
-- [Features](#features)
 - [Installation](#installation)
 - [About the Developer](#about-the-developer)
 
