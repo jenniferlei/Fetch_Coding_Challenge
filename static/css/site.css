@@ -1,0 +1,105 @@
+/* .rotate {
+  transform: rotate(90deg) translateY(-100%);
+  transform-origin: top left;
+} */
+
+.homepage-bg {
+  position: absolute;
+  top: 0px; /* 66 */
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background-image: url("/static/img/background.jpg");
+  background-position: top center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+.homepage-fade-div {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  background: -webkit-linear-gradient(
+    bottom,
+    rgba(255, 255, 255, 0) 80%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  background: -moz-linear-gradient(
+    bottom,
+    rgba(255, 255, 255, 0) 80%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  background: -o-linear-gradient(
+    bottom,
+    rgba(255, 255, 255, 0) 80%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  background: -ms-linear-gradient(
+    bottom,
+    rgba(255, 255, 255, 0) 80%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  background: linear-gradient(
+    bottom,
+    rgba(255, 255, 255, 0) 80%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 );
+}
+
+.homepage-container {
+  position: relative;
+  top: 0;
+  left: 0;
+  height: calc(100vh - 56px);
+  width: 100vw;
+}
+
+.app-greeting {
+  position: absolute;
+  top: calc(25%);
+  left: calc(50% - 230px);
+  background-color: rgba(255, 255, 255, 0.3);
+  color: rgb(0, 0, 0);
+  padding: 15px;
+  border-radius: 20px;
+}
+
+.app-img-credits {
+  position: absolute;
+  top: calc(100vh - 130px);
+  left: calc(100vw - 320px);
+  color: rgb(165, 165, 165);
+}
+
+.flash-msg {
+  position: absolute;
+  top: 56px;
+  left: 1em;
+  z-index: 1;
+}
+
+html,
+body {
+  margin: 0px;
+  height: 100%;
+  font-family: "Rubik", Helvetica, Arial, Arial, Tahoma, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Manrope", Helvetica, Arial, Arial, Tahoma, sans-serif;
+}
+
+.table-overflow {
+  height: 100%;
+  overflow-y: auto;
+}

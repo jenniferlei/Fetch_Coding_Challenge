@@ -1,0 +1,37 @@
+{% extends 'base.html' %} {% block head %} {% endblock %} {% block title %}Fetch
+Rewards{% endblock %} {% block body %}
+
+<div class="rotate homepage-bg"></div>
+<div class="homepage-fade-div"></div>
+
+{% if "username" in session %}
+
+<div id="root"></div>
+
+{% else %}
+
+<div class="homepage-container">
+  <!-- <div class="app-greeting" style="text-align: center">
+    <h2>Welcome</h2>
+    🍉 Come relax with us and enjoy a variety of melons! 🍈
+    <br />
+    <a href="" data-bs-toggle="modal" data-bs-target="#modal-login">Log in</a>
+    to start making your melon tasting reservation today!
+  </div> -->
+  <div class="app-img-credits">
+    <small class="fw-lighter"
+      >Photo by
+      <a
+        href="https://unsplash.com/@ashishjha?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+        >Avinash Kumar</a
+      >
+      on
+      <a
+        href="https://unsplash.com/s/photos/yellow?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+        >Unsplash</a
+      >
+    </small>
+  </div>
+</div>
+
+{% endif %} {% endblock %}

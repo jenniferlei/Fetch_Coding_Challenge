@@ -1,0 +1,97 @@
+"""Model for fetch rewards app."""
+
+import os
+import datetime
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
+from datetime import datetime
+
+db = SQLAlchemy()
+
+class Transaction(db.Model):
+    """A transaction."""
+
+    __tablename__ = "transactions"
+
+    transaction_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    username = db.Column(db.String, nullable=False)
+    payer = db.Column(db.String, nullable=False)
+    points = db.Column(db.Integer, nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False)
+    balance = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return f"<Transaction payer={self.payer} points={self.points} timestamp={self.timestamp} balance={self.balance}>"
+
+    def to_dict(self):
+        return {
+            "payer": self.payer,
+            "points": self.points,
+            "timestamp": self.timestamp,
+        }
+
+    @classmethod
+    def create_transaction(cls, username, payer, points, timestamp, balance):
+        """Create a transaction"""
+        transaction = Transaction(username=username, payer=payer, points=points, timestamp=timestamp, balance=balance)
+        
+        db.session.add(transaction)
+        db.session.commit()
+
+        return transaction
+
+    @classmethod
+    def find_transactions_by_user(cls, username):
+        """Find all transactions by user"""
+        transactions = Transaction.query\
+            .filter(Transaction.username==username)\
+            .all()
+
+        return transactions
+
+
+    # @classmethod
+    # def retrieve_reservations(cls, username):
+    #     return cls.query.filter_by(username=username).all()
+
+
+
+
+def connect_to_db(flask_app, db_uri="postgresql:///points", echo=True):
+    """connect to database"""
+    flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
+    flask_app.config["SQLALCHEMY_ECHO"] = echo
+    flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+    db.app = flask_app
+    db.init_app(flask_app)
+
+    print("Connected to the db!")
+
+
+def example_data():
+    """Create example data for the test database."""
+    
+    username = "test"
+
+    test_transactions = [
+        Transaction(username=username, payer="DANNON", points=1000, timestamp="2020-11-02T14:00:00Z", balance=1000),
+        Transaction(username=username, payer="UNILEVER", points=200, timestamp="2020-10-31T11:00:00Z", balance=200),
+        Transaction(username=username, payer="DANNON", points=-200, timestamp="2020-10-31T11:00:00Z", balance=0),
+        Transaction(username=username, payer="MILLER COORS", points=10000, timestamp="2020-11-01T14:00:00Z", balance=10000),
+        Transaction(username=username, payer="DANNON", points=300, timestamp="2020-10-31T10:00:00Z", balance=100)
+        ]
+        
+    db.session.add_all(test_transactions)
+    db.session.commit()
+
+
+if __name__ == "__main__":
+
+    from server import app
+
+    # Call connect_to_db(app, echo=False) if your program output gets
+    # too annoying; this will tell SQLAlchemy not to print out every
+    # query it executes.
+
+    connect_to_db(app)
