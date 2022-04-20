@@ -50,9 +50,16 @@ class Transaction(db.Model):
         return transactions
 
 
-    # @classmethod
-    # def retrieve_reservations(cls, username):
-    #     return cls.query.filter_by(username=username).all()
+    @classmethod
+    def retrieve_transactions_with_balance(cls, username):
+        """Retrieve all transactions with balance greater than 0 for a user"""
+        transactions = Transaction.query\
+            .filter(Transaction.username==username)\
+            .filter(Transaction.balance>0)\
+            .order_by(Transaction.timestamp)\
+            .all()
+
+        return transactions
 
 
 

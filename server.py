@@ -74,6 +74,32 @@ def point_balance():
     return jsonify(balances)
 
 
+@app.route("/all_transactions.json")
+def all_transactions():
+    """Return JSON response of all transactions."""
+
+    username = session.get("username")
+    transactions = Transaction.find_transactions_by_user(username)
+
+    transactions_schema = TransactionSchema(many=True)
+    transactions_json = transactions_schema.dump(transactions)
+
+    return jsonify(transactions_json)
+
+
+@app.route("/transactions_with_balance.json")
+def all_transactions_w_balance():
+    """Return JSON response of all transactions."""
+
+    username = session.get("username")
+    transactions = Transaction.retrieve_transactions_with_balance(username)
+
+    transactions_schema = TransactionSchema(many=True)
+    transactions_json = transactions_schema.dump(transactions)
+
+    return jsonify(transactions_json)
+
+
 @app.route("/add_points.json", methods=["POST"])
 def add_points():
     """Add points"""
@@ -102,10 +128,10 @@ def spend_points():
     points = request.form.get("points")
     timestamp = datetime.now()
 
-    spend_transactions = []
     spend_call = []
 
-    # transactions = get transactions with balance greater than 0 and ordered by timestamp oldest to newest
+    # get transactions with balance greater than 0 and ordered by timestamp oldest to newest
+    transactions = Transaction.retrieve_transactions_with_balance(username)
 
     # Transaction(username=username, payer="DANNON", points=300, timestamp="2020-10-31T10:00:00Z", balance=100)
     # Transaction(username=username, payer="UNILEVER", points=200, timestamp="2020-10-31T11:00:00Z", balance=200)
@@ -126,14 +152,13 @@ def spend_points():
             # create new transaction for spend
             spend_transaction = Transaction.create_transaction(username, transaction["payer"], -spend, timestamp, 0)
             db.session.add(spend_transaction)
+            db.session.commit()
+
+            spend_call.append({"payer": spend_transaction["payer"], "points": spend_transaction["points"]})
 
             # remove points that have been spent
             points -= spend
 
-            
-    new_reservation = Reservation.create_reservation(username, reservation_start)
-    db.session.add(new_reservation)
-    db.session.commit()
 
     # Then you call your spend points route with the following request:
     # { "points": 5000 }
@@ -143,6 +168,8 @@ def spend_points():
     # { "payer": "UNILEVER", "points": -200 },
     # { "payer": "MILLER COORS", "points": -4,700 }
     # ]
+
+    print("LINE 172", spend_call)
 
     return jsonify(spend_call)
 

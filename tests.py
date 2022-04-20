@@ -57,6 +57,12 @@ class FlaskTestsDatabase(TestCase):
         # db.create_all()
         # example_data()
 
+        self.client = app.test_client()
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess["username"] = "test"
+
     def tearDown(self):
         """Do at end of every test."""
 
@@ -67,7 +73,7 @@ class FlaskTestsDatabase(TestCase):
     def test_login(self):
         """Test login page."""
         result = self.client.post("/login",
-                                  data={"username": "user0"},
+                                  data={"username": "test"},
                                   follow_redirects=True, headers={"Referer": "/"})
         self.assertIn(b"Log Out", result.data)
 
@@ -75,14 +81,27 @@ class FlaskTestsDatabase(TestCase):
         """Test points balance page."""
 
         result = self.client.get("/point_balance.json")
-        self.assertIn(b"\"DANNON\": 1100, \"MILLER COORS\": 10000,\ 
-        "UNILEVER\": 200", result.data)
+        self.assertIn(b"\"DANNON\": 1100,", result.data)
+        self.assertIn(b"\"MILLER COORS\": 10000,", result.data)
+        self.assertIn(b"\"UNILEVER\": 200,", result.data)
 
-    def test_departments_details(self):
-        """Test departments page."""
+    def test_add_points(self):
+        """Test add points route."""
 
-        result = self.client.get("/department/fin")
+        result = self.client.post("/add_points.json",
+                                  data={"username": "test"},
+                                  follow_redirects=True, headers={"Referer": "/"})
+        self.assertIn(b"Log Out", result.data)
         self.assertIn(b"Phone: 555-1000", result.data)
+
+    def test_spend_points(self):
+        """Test spend points route."""
+
+        result = self.client.post("/spend_points.json",
+                                  data={"points": 5000})
+        self.assertIn(b"{ \"payer\": \"DANNON\", \"points\": -100 }", result.data)
+        self.assertIn(b"{ \"payer\": \"UNILEVER\", \"points\": -200 }", result.data)
+        self.assertIn(b"{ \"payer\": \"MILLER COORS\", \"points\": -4700 }", result.data)
 
 
 class FlaskTestsLoggedIn(TestCase):
@@ -111,14 +130,13 @@ class FlaskTestsLoggedIn(TestCase):
 
         with self.client as c:
             with c.session_transaction() as sess:
-                sess['username'] = "testuser0"
-                sess['login'] = True
+                sess['username'] = "test"
 
-    def test_dashboard_page(self):
+    def test_logged_in(self):
         """Test dashboard page."""
 
         result = self.client.get("/")
-        self.assertIn(b"Welcome, testuser0", result.data)
+        self.assertIn(b"Welcome, test", result.data)
 
 
 class FlaskTestsLoggedOut(TestCase):
@@ -142,7 +160,7 @@ class FlaskTestsLoggedOut(TestCase):
         # db.create_all()
         # example_data()
 
-    def test_dashboard_page(self):
+    def test_logged_out(self):
         """Test that user can't see dashboard page when logged out."""
 
         result = self.client.get("/", follow_redirects=True)
