@@ -13,7 +13,7 @@ from marshmallow import fields
 app = Flask(__name__)
 ma = Marshmallow(app)
 
-app.secret_key = "dev"
+app.secret_key = os.environ["APP_SECRET_KEY"]
 app.jinja_env.undefined = StrictUndefined
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -85,8 +85,18 @@ def add_points():
     # ● { "payer": "DANNON", "points": 300, "timestamp": "2020-10-31T10:00:00Z" }
     username = session.get("username")
     payer = request.get_json().get("payer")
-    points = int(request.get_json().get("points"))
+    points = request.get_json().get("points")
     timestamp = request.get_json().get("timestamp")
+
+    if username is None:
+        return jsonify({"error": "Username not in session"})
+
+    if points.isdigit():
+        points = int(points)
+
+    # Adding error handling to backend in case frontend does not catch errors
+    if payer == "" or points <= 0 or points == "" or timestamp == "":
+        return jsonify({"error": "Invalid form field"})
 
     new_transaction = Transaction.create_transaction(username, payer, points, timestamp, points)
     db.session.add(new_transaction)
@@ -112,9 +122,15 @@ def spend_points():
     # { "payer": "MILLER COORS", "points": -4,700 }
     # ]
 
-    username = session.get("username", None)
-    points = int(request.get_json().get("points"))
+    username = session.get("username")
+    points = request.get_json().get("points")
     timestamp = datetime.now()
+
+    if username is None:
+        return jsonify({"error": "Username not in session"})
+
+    if points.isdigit():
+        points = int(points)
 
     spend_calls = []
 
@@ -124,6 +140,12 @@ def spend_points():
     # Transaction(username=username, payer="MILLER COORS", points=10000, timestamp="2020-11-01T14:00:00Z", balance=10000)
     # Transaction(username=username, payer="DANNON", points=1000, timestamp="2020-11-02T14:00:00Z", balance=1000)
     transactions = Transaction.retrieve_transactions_with_balance(username)
+
+    total_transaction_balance = sum([transaction.balance for transaction in transactions])
+
+    # Adding error handling to backend in case frontend does not catch errors
+    if points == "" or points <= 0 or points >= total_transaction_balance:
+        return jsonify({"success": False})
 
     for transaction in transactions:
         if points > 0:
