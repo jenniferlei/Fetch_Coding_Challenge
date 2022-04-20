@@ -76,13 +76,6 @@
   color: rgb(165, 165, 165);
 }
 
-.flash-msg {
-  position: absolute;
-  top: 56px;
-  left: 1em;
-  z-index: 1;
-}
-
 html,
 body {
   margin: 0px;
@@ -97,9 +90,4 @@ h4,
 h5,
 h6 {
   font-family: "Manrope", Helvetica, Arial, Arial, Tahoma, sans-serif;
-}
-
-.table-overflow {
-  height: 100%;
-  overflow-y: auto;
 }

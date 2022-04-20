@@ -1,10 +1,8 @@
 """Model for fetch rewards app."""
 
 import os
-import datetime
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
 from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
@@ -21,14 +19,13 @@ class Transaction(db.Model):
     timestamp = db.Column(db.DateTime, nullable=False)
     balance = db.Column(db.Integer, nullable=False)
 
-
     def __repr__(self):
         return f"<Transaction payer={self.payer} points={self.points} timestamp={self.timestamp} balance={self.balance}>"
-
 
     @classmethod
     def create_transaction(cls, username, payer, points, timestamp, balance):
         """Create a transaction."""
+
         transaction = Transaction(username=username, payer=payer, points=points, timestamp=timestamp, balance=balance)
         
         db.session.add(transaction)
@@ -36,20 +33,20 @@ class Transaction(db.Model):
 
         return transaction
 
-
     @classmethod
     def find_transactions_by_user(cls, username):
         """Find all transactions by user."""
+
         transactions = Transaction.query\
             .filter(Transaction.username==username)\
             .all()
 
         return transactions
 
-
     @classmethod
     def retrieve_transactions_with_balance(cls, username):
         """Retrieve all transactions with balance greater than 0 for a user."""
+
         transactions = Transaction.query\
             .filter(Transaction.username==username)\
             .filter(Transaction.balance>0)\
@@ -60,7 +57,8 @@ class Transaction(db.Model):
 
 
 def connect_to_db(flask_app, db_uri="postgresql:///points", echo=True):
-    """Connect to database"""
+    """Connect to database."""
+
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
     flask_app.config["SQLALCHEMY_ECHO"] = echo
     flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
