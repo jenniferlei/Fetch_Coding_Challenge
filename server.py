@@ -74,32 +74,6 @@ def point_balance():
     return jsonify(balances)
 
 
-@app.route("/all_transactions.json")
-def all_transactions():
-    """Return JSON response of all transactions."""
-
-    username = session.get("username")
-    transactions = Transaction.find_transactions_by_user(username)
-
-    transactions_schema = TransactionSchema(many=True)
-    transactions_json = transactions_schema.dump(transactions)
-
-    return jsonify(transactions_json)
-
-
-@app.route("/transactions_with_balance.json")
-def all_transactions_w_balance():
-    """Return JSON response of all transactions."""
-
-    username = session.get("username")
-    transactions = Transaction.retrieve_transactions_with_balance(username)
-
-    transactions_schema = TransactionSchema(many=True)
-    transactions_json = transactions_schema.dump(transactions)
-
-    return jsonify(transactions_json)
-
-
 @app.route("/add_points.json", methods=["POST"])
 def add_points():
     """Add points"""
@@ -118,63 +92,60 @@ def add_points():
     db.session.add(new_transaction)
     db.session.commit()
 
-    return jsonify(new_transaction)
+    # Define output format with marshmallow to match fields in example
+    transaction_schema = TransactionSchema(exclude=["transaction_id", "username", "balance"])
+    transaction_json = transaction_schema.dump(new_transaction)
+    return jsonify(transaction_json)
 
 
 @app.route("/spend_points.json", methods=["POST"])
 def spend_points():
     """Create a reservation with the specified user and time."""
+    # Then you call your spend points route with the following request:
+    # { "points": 5000 }
+    # The expected response from the spend call would be:
+    # [
+    # { "payer": "DANNON", "points": -100 },
+    # { "payer": "UNILEVER", "points": -200 },
+    # { "payer": "MILLER COORS", "points": -4,700 }
+    # ]
+
     username = session.get("username", None)
 
-    if username:
-        points = int(request.get_json().get("points"))
-        timestamp = datetime.now()
+    points = int(request.get_json().get("points"))
+    timestamp = datetime.now()
 
-        spend_call = []
+    spend_calls = []
 
-        # get transactions with balance greater than 0 and ordered by timestamp oldest to newest
-        # Transaction(username=username, payer="DANNON", points=300, timestamp="2020-10-31T10:00:00Z", balance=100)
-        # Transaction(username=username, payer="UNILEVER", points=200, timestamp="2020-10-31T11:00:00Z", balance=200)
-        # Transaction(username=username, payer="MILLER COORS", points=10000, timestamp="2020-11-01T14:00:00Z", balance=10000)
-        # Transaction(username=username, payer="DANNON", points=1000, timestamp="2020-11-02T14:00:00Z", balance=1000)
-        transactions = Transaction.retrieve_transactions_with_balance(username)
+    # get transactions with balance greater than 0 and ordered by timestamp oldest to newest
+    # Transaction(username=username, payer="DANNON", points=300, timestamp="2020-10-31T10:00:00Z", balance=100)
+    # Transaction(username=username, payer="UNILEVER", points=200, timestamp="2020-10-31T11:00:00Z", balance=200)
+    # Transaction(username=username, payer="MILLER COORS", points=10000, timestamp="2020-11-01T14:00:00Z", balance=10000)
+    # Transaction(username=username, payer="DANNON", points=1000, timestamp="2020-11-02T14:00:00Z", balance=1000)
+    transactions = Transaction.retrieve_transactions_with_balance(username)
 
-        for transaction in transactions:
-            if points > 0:
-                # if the transaction balance is greater than spend points, spend down all points
-                if transaction.balance > points:
-                    spend = points
-                # if the spend points is greater than transaction balance, spend down transaction balance
-                else:
-                    spend = transaction.balance
-                # update balance on transaction
-                transaction.balance -= spend
-                # create new transaction for spend
-                spend_transaction = Transaction.create_transaction(username, transaction.payer, -spend, timestamp, 0)
-                db.session.add(spend_transaction)
-                db.session.commit()
+    for transaction in transactions:
+        if points > 0:
+            # if the transaction balance is greater than spend points, spend down all points
+            if transaction.balance > points:
+                spend = points
+            # if the spend points is greater than transaction balance, spend down transaction balance
+            else:
+                spend = transaction.balance
+            # update balance on transaction
+            transaction.balance -= spend
+            # create new transaction for each spend
+            spend_transaction = Transaction.create_transaction(username, transaction.payer, -spend, timestamp, 0)
+            db.session.add(spend_transaction)
+            db.session.commit()
 
-                spend_call.append({"payer": spend_transaction.payer, "points": spend_transaction.points})
+            # Define output format to match fields in example
+            spend_calls.append({"payer": transaction.payer, "points": -spend})
 
-                # remove points that have been spent
-                points -= spend
+            # remove points that have been spent
+            points -= spend
 
-
-        # Then you call your spend points route with the following request:
-        # { "points": 5000 }
-        # The expected response from the spend call would be:
-        # [
-        # { "payer": "DANNON", "points": -100 },
-        # { "payer": "UNILEVER", "points": -200 },
-        # { "payer": "MILLER COORS", "points": -4,700 }
-        # ]
-
-        return jsonify(spend_call)
-    else:
-        flash("Please log in to spend your points")
-
-        return redirect("/")
-
+    return jsonify(spend_calls)
 
 
 if __name__ == "__main__":
@@ -183,5 +154,3 @@ if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
 
 connect_to_db(app)
-
-

@@ -8,6 +8,7 @@ from datetime import datetime
 
 db = SQLAlchemy()
 
+
 class Transaction(db.Model):
     """A transaction."""
 
@@ -20,19 +21,14 @@ class Transaction(db.Model):
     timestamp = db.Column(db.DateTime, nullable=False)
     balance = db.Column(db.Integer, nullable=False)
 
+
     def __repr__(self):
         return f"<Transaction payer={self.payer} points={self.points} timestamp={self.timestamp} balance={self.balance}>"
 
-    def to_dict(self):
-        return {
-            "payer": self.payer,
-            "points": self.points,
-            "timestamp": self.timestamp,
-        }
 
     @classmethod
     def create_transaction(cls, username, payer, points, timestamp, balance):
-        """Create a transaction"""
+        """Create a transaction."""
         transaction = Transaction(username=username, payer=payer, points=points, timestamp=timestamp, balance=balance)
         
         db.session.add(transaction)
@@ -40,9 +36,10 @@ class Transaction(db.Model):
 
         return transaction
 
+
     @classmethod
     def find_transactions_by_user(cls, username):
-        """Find all transactions by user"""
+        """Find all transactions by user."""
         transactions = Transaction.query\
             .filter(Transaction.username==username)\
             .all()
@@ -52,7 +49,7 @@ class Transaction(db.Model):
 
     @classmethod
     def retrieve_transactions_with_balance(cls, username):
-        """Retrieve all transactions with balance greater than 0 for a user"""
+        """Retrieve all transactions with balance greater than 0 for a user."""
         transactions = Transaction.query\
             .filter(Transaction.username==username)\
             .filter(Transaction.balance>0)\
@@ -62,10 +59,8 @@ class Transaction(db.Model):
         return transactions
 
 
-
-
 def connect_to_db(flask_app, db_uri="postgresql:///points", echo=True):
-    """connect to database"""
+    """Connect to database"""
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
     flask_app.config["SQLALCHEMY_ECHO"] = echo
     flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

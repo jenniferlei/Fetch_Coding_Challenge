@@ -1,11 +1,20 @@
 "use strict";
 
-// payers. Could add to database, however it is outside the scope of the microservice
-const payers = ["DANNON", "UNILEVER", "MILLER COORS"];
+// Payer and Category options. Could expand and add to database, however it is outside the scope of the microservice
+const payerOptions = ["DANNON", "UNILEVER", "MILLER COORS"];
+const rewardCategoryOptions = [
+  "Merch",
+  "Sweepstakes",
+  "Gift Card",
+  "Cash Card",
+  "Charity",
+  "Travel",
+  "Specialty",
+];
 
-const RedeemPoints = () => {
+const EarnPoints = (props) => {
   const [payer, setPayer] = React.useState("");
-  const [points, setPoints] = React.useState(0);
+  const [points, setPoints] = React.useState("");
   const [timestamp, setTimestamp] = React.useState("");
 
   const addPoints = () => {
@@ -21,24 +30,94 @@ const RedeemPoints = () => {
         timestamp,
       }),
     })
-      .then((response) => {
-        response.json();
-      })
+      .then((response) => response.json())
       .then((jsonResponse) => {
         console.log(jsonResponse);
         props.getPointBalance();
       });
   };
 
+  const validateEarn = () => {
+    const alertText = "Please complete the following:";
+    const payerAlert = "\n• select a payer";
+    const pointsAlert = "\n• input points";
+    const timestampAlert = "\n• input timestamp";
+
+    if (
+      payer === "" ||
+      points === "" ||
+      Number(points) <= 0 ||
+      timestamp === ""
+    ) {
+      let completeAlertText = [alertText];
+      if (payer === "") {
+        completeAlertText.push(payerAlert);
+      }
+      if (points === "" || Number(points) <= 0) {
+        completeAlertText.push(pointsAlert);
+      }
+      if (timestamp === "") {
+        completeAlertText.push(timestampAlert);
+      }
+      alert(completeAlertText.join(""));
+    } else {
+      addPoints();
+    }
+  };
+
   return (
     <React.Fragment>
-      <h3>Redeem Your Points</h3>
+      <h3>Earn Points</h3>
+      Earn points by submitting the payer, number of points and timestamp from
+      your receipt!
+      <div className="mt-3">
+        <label htmlFor="payer-input">Payer</label>
+        <select
+          id="payer-input"
+          className="form-select"
+          aria-label="payer-input"
+          onChange={(event) => setPayer(event.target.value)}
+        >
+          <option value=""></option>
+          {payerOptions.map((payerOption) => (
+            <option value={payerOption}>{payerOption}</option>
+          ))}
+        </select>
+      </div>
+      <div className="mt-3">
+        <label htmlFor="earn-points-input">Points Earned</label>
+        <input
+          id="earn-points-input"
+          type="number"
+          step={1}
+          min={0}
+          className="form-control input-sm"
+          onChange={(event) => setPoints(event.target.value)}
+        />
+      </div>
+      <div className="mt-3">
+        <label htmlFor="timestamp-input">Timestamp</label>
+        <input
+          id="timestamp-input"
+          type="datetime-local"
+          onChange={(event) => setTimestamp(event.target.value)}
+          className="form-control"
+        />
+      </div>
+      <div className="mt-3">
+        <button
+          className="btn btn-sm btn-outline-dark btn-block"
+          onClick={validateEarn}
+        >
+          Submit
+        </button>
+      </div>
     </React.Fragment>
   );
 };
 
 const SpendPoints = (props) => {
-  const [points, setPoints] = React.useState(0);
+  const [points, setPoints] = React.useState("");
 
   const spendPoints = () => {
     fetch("/spend_points.json", {
@@ -51,9 +130,7 @@ const SpendPoints = (props) => {
         points,
       }),
     })
-      .then((response) => {
-        response.json();
-      })
+      .then((response) => response.json())
       .then((jsonResponse) => {
         console.log(jsonResponse);
         props.getPointBalance();
@@ -62,8 +139,10 @@ const SpendPoints = (props) => {
 
   // Validate form - need to make sure to spend amount is less than points balance
   const validateSpend = () => {
-    if (points >= props.balance || points === "" || points === "0") {
-      alert(`You can spend up to ${props.balance} points. Please try again.`);
+    if (points >= props.balance) {
+      alert(`You can spend up to a maximum of ${props.balance} points.`);
+    } else if (points === "" || Number(points) <= 0) {
+      alert("Please complete the following:\n• input points");
     } else {
       spendPoints();
     }
@@ -72,19 +151,40 @@ const SpendPoints = (props) => {
   return (
     <React.Fragment>
       <h3>Spend Your Points</h3>
-      <input
-        type="number"
-        step={1}
-        min={0}
-        className="form-control input-sm"
-        onChange={(event) => setPoints(event.target.value)}
-      />
-      <button
-        className="btn btn-sm btn-outline-dark btn-block"
-        onClick={validateSpend}
-      >
-        Submit
-      </button>
+      Reward yourself with the points you've earned! Select a reward category
+      and input how many points you would like to use.
+      <div className="mt-3">
+        <label htmlFor="reward-input">Reward Category</label>
+        <select
+          id="reward-input"
+          className="form-select"
+          aria-label="reward-input"
+        >
+          <option value=""></option>
+          {rewardCategoryOptions.map((reward) => (
+            <option value={reward}>{reward}</option>
+          ))}
+        </select>
+      </div>
+      <div className="mt-3">
+        <label htmlFor="spend-points-input">Points</label>
+        <input
+          id="spend-points-input"
+          type="number"
+          step={1}
+          min={0}
+          className="form-control input-sm"
+          onChange={(event) => setPoints(event.target.value)}
+        />
+      </div>
+      <div className="mt-3">
+        <button
+          className="btn btn-sm btn-outline-dark btn-block"
+          onClick={validateSpend}
+        >
+          Submit
+        </button>
+      </div>
     </React.Fragment>
   );
 };
@@ -122,22 +222,16 @@ const PointsContainer = () => {
     >
       <div className="card-body">
         <div className="d-flex">
-          <h2>Points: {points}</h2>
+          <h2>Your Points: {points}</h2>
         </div>
         <div
           className="d-flex"
           style={{ height: "calc(100% - 50px)", width: "100%" }}
         >
-          <div
-            className="col-md-6 g-2"
-            style={{ border: "1px solid black", height: "100%" }}
-          >
-            <RedeemPoints />
+          <div className="col-md-6 pe-2" style={{ height: "100%" }}>
+            <EarnPoints balance={points} getPointBalance={getPointBalance} />
           </div>
-          <div
-            className="col-md-6 g-2"
-            style={{ border: "1px solid black", height: "100%" }}
-          >
+          <div className="col-md-6 ps-2" style={{ height: "100%" }}>
             <SpendPoints balance={points} getPointBalance={getPointBalance} />
           </div>
         </div>
