@@ -1,9 +1,9 @@
 """Server for fetch rewards app."""
 
 from datetime import datetime
+import os
 from flask import Flask, render_template, jsonify, request, session, redirect
 from jinja2 import StrictUndefined
-import os
 
 from model import Transaction, db, connect_to_db
 
@@ -13,7 +13,7 @@ from marshmallow import fields
 app = Flask(__name__)
 ma = Marshmallow(app)
 
-app.secret_key = os.environ["APP_SECRET_KEY"]
+app.secret_key = os.getenv("APP_SECRET_KEY")
 app.jinja_env.undefined = StrictUndefined
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
