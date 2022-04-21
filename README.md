@@ -24,7 +24,7 @@ I chose to use Flask, a lightweight web framework that is flexible and simple to
 
 ## Reflection
 
-Currently, a user can log in without a password. Log in was outside the scope of the challenge, however, given more time, I would incorporate a User table that would have a relationship with the Transaction table. With a User table, I could have a password field which would allow me to enable authentication.
+Currently, a user can log in with any username and without a password. Log in was outside the scope of the challenge, however, given more time, I would incorporate a User table that would have a relationship with the Transaction table. With a User table, I could have a password field which would allow me to enable authentication.
 
 I added unit tests that test that each API endpoints return the correct results, as well as test the homepage, login and logout pages.
 
