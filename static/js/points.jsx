@@ -18,7 +18,7 @@ const EarnPoints = (props) => {
   const [timestamp, setTimestamp] = React.useState("");
 
   const addPoints = () => {
-    fetch("/transaction", {
+    fetch("/api/transaction", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -120,7 +120,7 @@ const SpendPoints = (props) => {
   const [points, setPoints] = React.useState("");
 
   const spendPoints = () => {
-    fetch("/spend", {
+    fetch("/api/spend", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -197,7 +197,7 @@ const PointsContainer = () => {
   }, []);
 
   const getPointBalance = () => {
-    fetch("/balance")
+    fetch("/api/balance")
       .then((response) => response.json())
       .then((responseJson) => {
         let sum = 0;

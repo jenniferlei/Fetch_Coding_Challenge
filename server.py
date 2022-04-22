@@ -52,7 +52,7 @@ def logout():
     return redirect("/")
 
 
-@app.route("/balance")
+@app.route("/api/balance")
 def point_balance():
     """Return JSON response of available points per payer."""
     # A subsequent call to the points balance route, after the spend,
@@ -73,7 +73,7 @@ def point_balance():
     return jsonify(balances)
 
 
-@app.route("/transaction", methods=["POST"])
+@app.route("/api/transaction", methods=["POST"])
 def add_points():
     """Add points"""
 
@@ -109,7 +109,7 @@ def add_points():
     return jsonify(transaction_json)
 
 
-@app.route("/spend", methods=["POST"])
+@app.route("/api/spend", methods=["POST"])
 def spend_points():
     """Create a reservation with the specified user and time."""
 

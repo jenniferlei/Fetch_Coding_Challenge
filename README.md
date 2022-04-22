@@ -85,6 +85,28 @@ Run the app:
 
 You can now navigate to `localhost:5000/` to start adding and spending points!
 
+## API Routes
+
+### Add a Transaction
+
+Add transactions for a specific payer and date
+HTTP POST `/api/transaction`
+
+#### Example : `http://localhost:5000/api/transcation`
+
+### Spend
+
+Spend points using the rules above and return a list of `{ "payer": <string>, "points": <integer> }` for each call
+HTTP POST `/api/spend`
+
+#### Example : `http://localhost:5000/api/spend`
+
+### Balance
+
+Return all payer point balances 3. `/api/balance` - HTTP GET request to return all payer point balances.
+
+#### Example : `http://localhost:5000/api/balances`
+
 ## About the Developer
 
 Jennifer Lei is a software engineer in the Greater Los Angeles Area, and previously worked in multiple fields, such as B2B tech sales, finance and e-commerce. She decided to follow her dreams, pivoted to software engineering, and has enjoyed every minute of it since!

@@ -52,13 +52,13 @@ class FlaskTestsDatabase(TestCase):
     def test_points_balance(self):
         """Test points balance page."""
 
-        result = self.client.get("/balance")
+        result = self.client.get("/api/balance")
         self.assertIn(b'{"DANNON":1100,"MILLER COORS":10000,"UNILEVER":200}', result.data)
 
     def test_spend_points(self):
         """Test spend points route."""
 
-        result = self.client.post("/spend",
+        result = self.client.post("/api/spend",
                                 json={"points": 5000})
         self.assertIn(b'{"payer":"DANNON","points":-100}', result.data)
         self.assertIn(b'{"payer":"UNILEVER","points":-200}', result.data)
@@ -67,7 +67,7 @@ class FlaskTestsDatabase(TestCase):
     def test_add_points(self):
         """Test add points route."""
 
-        result = self.client.post("/transaction",
+        result = self.client.post("/api/transaction",
                                   json={"payer": "UNILEVER", "points": "300", "timestamp": "2021-10-31T10:00:00Z"})
         self.assertIn(b'{"payer":"UNILEVER","points":300,"timestamp":"2021-10-31T10:00:00"}', result.data)
 
