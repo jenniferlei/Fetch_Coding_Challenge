@@ -52,7 +52,7 @@ def logout():
     return redirect("/")
 
 
-@app.route("/point_balance.json")
+@app.route("/balance")
 def point_balance():
     """Return JSON response of available points per payer."""
     # A subsequent call to the points balance route, after the spend,
@@ -73,7 +73,7 @@ def point_balance():
     return jsonify(balances)
 
 
-@app.route("/add_points.json", methods=["POST"])
+@app.route("/transaction", methods=["POST"])
 def add_points():
     """Add points"""
 
@@ -95,7 +95,7 @@ def add_points():
         points = int(points)
 
     # Adding error handling to backend in case frontend does not catch errors
-    if payer == "" or points <= 0 or points == "" or timestamp == "":
+    if payer == "" or points == "" or timestamp == "":
         return jsonify({"error": "Invalid form field"})
 
     new_transaction = Transaction.create_transaction(username, payer, points, timestamp, points)
@@ -109,7 +109,7 @@ def add_points():
     return jsonify(transaction_json)
 
 
-@app.route("/spend_points.json", methods=["POST"])
+@app.route("/spend", methods=["POST"])
 def spend_points():
     """Create a reservation with the specified user and time."""
 
@@ -144,11 +144,11 @@ def spend_points():
     total_transaction_balance = sum([transaction.balance for transaction in transactions])
 
     # Adding error handling to backend in case frontend does not catch errors
-    if points == "" or points <= 0 or points >= total_transaction_balance:
+    if points == "" or points <= 0 or points > total_transaction_balance:
         return jsonify({"success": False})
 
     for transaction in transactions:
-        if points > 0:
+        if points >= 0:
             # if the transaction balance is greater than spend points, spend down all points
             if transaction.balance > points:
                 spend = points

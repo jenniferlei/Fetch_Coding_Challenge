@@ -18,7 +18,7 @@ const EarnPoints = (props) => {
   const [timestamp, setTimestamp] = React.useState("");
 
   const addPoints = () => {
-    fetch("/add_points.json", {
+    fetch("/transaction", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -120,7 +120,7 @@ const SpendPoints = (props) => {
   const [points, setPoints] = React.useState("");
 
   const spendPoints = () => {
-    fetch("/spend_points.json", {
+    fetch("/spend", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -139,7 +139,7 @@ const SpendPoints = (props) => {
 
   // Validate form - need to make sure to spend amount is less than points balance
   const validateSpend = () => {
-    if (points >= props.balance) {
+    if (points > props.balance) {
       alert(`You can spend up to a maximum of ${props.balance} points.`);
     } else if (points === "" || Number(points) <= 0) {
       alert("Please complete the following:\n• input points");
@@ -197,7 +197,7 @@ const PointsContainer = () => {
   }, []);
 
   const getPointBalance = () => {
-    fetch("/point_balance.json")
+    fetch("/balance")
       .then((response) => response.json())
       .then((responseJson) => {
         let sum = 0;

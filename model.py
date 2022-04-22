@@ -6,11 +6,11 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 # For Heroku Deployment
-uri = os.getenv("DATABASE_URL")
-if uri.startswith("postgres://"):
-    uri = uri.replace("postgres://", "postgresql://", 1)
+# uri = os.getenv("DATABASE_URL")
+# if uri.startswith("postgres://"):
+#     uri = uri.replace("postgres://", "postgresql://", 1)
 
-# other_uri = "postgresql:///points"
+other_uri = "postgresql:///points"
 
 class Transaction(db.Model):
     """A transaction."""
@@ -61,7 +61,7 @@ class Transaction(db.Model):
         return transactions
 
 
-def connect_to_db(flask_app, db_uri=uri, echo=True):
+def connect_to_db(flask_app, db_uri=other_uri, echo=True):
     """Connect to database."""
 
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
